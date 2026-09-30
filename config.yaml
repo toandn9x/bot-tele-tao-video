@@ -1,0 +1,44 @@
+app:
+  debug: false
+  conversation_timeout_minutes: 30
+  keep_session_files_days: 3      # file trung gian trong workspace/sessions/ quá hạn sẽ bị xóa
+  max_saved_models: 10            # số người mẫu tối đa mỗi người dùng được lưu (workspace/models/<user_id>/)
+
+gemini_web:
+  app_url: "https://gemini.google.com/app?hl=vi"
+  video_url: "https://gemini.google.com/app?hl=vi"   # mặc định là app, spike có thể tùy chỉnh
+  cdp_port: 9222
+  profile_dir: "workspace/chrome-profile"
+  image_timeout_seconds: 180
+  video_timeout_seconds: 600
+  poll_interval_seconds: 2
+
+image:
+  default_prompt: >
+    Fashion editorial composite task: Layout and scene master: Image 1 (Maintain the exact background, camera perspective, and subject setup). Wardrobe design source: Image 2. Render a high-quality photo where the wardrobe style, colors, and patterns from Image 2 are applied onto the subject in Image 1. Keep the entire surrounding environment unchanged.
+  retry_template: >
+    Keep everything else exactly as in the previous image (face, pose, background, outfit details).
+    Only apply this change: {user_feedback}
+
+video:
+  default_prompt: >
+    Vertical 9:16 fashion outfit video in a mirror-selfie style, based on the uploaded photo.
+    The model stands in front of a mirror holding a smartphone that covers the face for the whole clip,
+    with the other hand resting at the side or on the waist.
+    Calm, minimal posing to show the outfit: a slight turn to the left and to the right, a small change of stance,
+    a light touch of the hair. Movements are slow and smooth.
+    The outfit stays exactly as in the photo: same design, colors, pattern, fit and accessories.
+    The fabric moves and drapes naturally with each movement.
+    Camera: steady mirror-selfie framing with a slow push-in and a gentle side drift,
+    from full body to a mid shot, the outfit always clearly in frame.
+    Soft indoor lighting, clean minimalist room, same background as the photo.
+    Natural, high-quality fashion reel look, sharp clothing details, no text or captions.
+  retry_template: >
+    {base_prompt}
+    Additional motion requirements (later items take priority):
+    {feedback_list}
+
+tiktok:
+  caption_template: "Phối thử {product_name} ✨ Link sản phẩm ở giỏ hàng bên dưới nhé! {hashtags}"
+  hashtags: "#thoitrang #outfit #tryon #xuhuong"
+  caption_without_product: "Outfit mới ✨ Link sản phẩm ở giỏ hàng bên dưới nhé! {hashtags}"

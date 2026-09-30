@@ -1,0 +1,84 @@
+# Ngôn ngữ giao diện cố định theo hl=vi trong app_url
+chat:
+  # Chỉ đúng thẻ <model-response>: bên trong có nhiều div class "response-container-*" (footer nằm SAU ảnh)
+  response_container: "model-response"
+  new_chat_button: "a[href='/app'], button[aria-label*='Cuộc trò chuyện mới'], button[aria-label*='New chat']"
+  upload_button: "button[aria-haspopup='menu'][aria-label*='tải lên' i], button[aria-haspopup='menu'][aria-label*='upload' i]"
+  # Cửa sổ hẹp: menu dạng mat-action-list[role=menu] có nút tròn "Tệp" (không có role=menuitem).
+  # Cửa sổ rộng: có thể là [role=menuitem] "Tải tệp lên".
+  upload_menu_item: "[role='menu'] gem-button:has-text('Tệp') button, [role='menuitem']:has-text('tệp'), [role='menuitem']:has-text('Tải'), [role='menuitem']:has-text('Upload'), [role='menuitem']:has-text('File'), button:has-text('Tải tệp lên'), button:has-text('Upload file')"
+  file_input: "input[type='file']"
+  upload_thumbnail: "img[src^='blob:'], [class*='attachment'] img, [class*='preview'] img, button[aria-label*='Xóa' i], button[aria-label*='Remove' i]"
+  prompt_box: "div[role='textbox'], rich-textarea div[contenteditable='true'], textarea, [contenteditable='true']"
+  send_button: "button[aria-label*='Gửi'], button[aria-label*='Send'], button.send-button"
+  # DOM thật: <generated-image><single-image>...<img class="image animate loaded" src="blob:..."></single-image></generated-image>
+  response_image: "generated-image img, single-image img, img.image"
+  # DOM thật: <download-generated-image-button> > button[aria-label="Tải hình ảnh có kích thước đầy đủ xuống"] (hiện khi hover)
+  download_button: "download-generated-image-button button, [data-test-id='download-generated-image-button'] button, button[aria-label*='kích thước đầy đủ' i], button[aria-label*='Tải xuống'], a[download]"
+
+video:
+  response_container: "model-response"
+  # Chọn công cụ "Tạo video" trong menu "+" (gem-list-item[role=menuitemcheckbox])
+  tool_menu_button: "button[aria-haspopup='menu'][aria-label*='tải lên' i], button[aria-haspopup='menu'][aria-label*='upload' i]"
+  tool_item: "[role='menuitemcheckbox']:has-text('Tạo video'), [role='menuitemcheckbox']:has-text('Create video')"
+  # Cửa sổ hẹp: nút "close Video"; cửa sổ rộng: "Bỏ chọn Video"; dự phòng: placeholder riêng của chế độ video
+  tool_active: "button[aria-label*='close Video' i], button[aria-label*='Bỏ chọn Video'], button[aria-label*='Deselect Video' i], [contenteditable='true'][data-placeholder*='Mô tả video']"
+  # Chế độ video có nút "Tải tệp lên" mở thẳng hộp chọn file
+  upload_direct_button: "button[aria-label='Tải tệp lên'], button[aria-label='Upload file']"
+  # Mặc định "Ngang (16:9)" -> phải chuyển sang "Dọc (9:16)"
+  aspect_button: "button[aria-label*='Tỷ lệ khung hình'], button[aria-label*='Aspect ratio' i]"
+  aspect_portrait_option: "[role='menuitemradio'][aria-label*='9:16']"
+  upload_button: "button[aria-haspopup='menu'][aria-label*='tải lên' i], button[aria-haspopup='menu'][aria-label*='upload' i]"
+  upload_menu_item: "[role='menu'] gem-button:has-text('Tệp') button, [role='menuitem']:has-text('tệp'), [role='menuitem']:has-text('Tải'), [role='menuitem']:has-text('Upload'), [role='menuitem']:has-text('File'), button:has-text('Tải tệp lên'), button:has-text('Upload file')"
+  file_input: "input[type='file']"
+  upload_thumbnail: "img[src^='blob:'], [class*='attachment'] img, [class*='preview'] img, button[aria-label*='Xóa' i], button[aria-label*='Remove' i]"
+  prompt_box: "div[role='textbox'], rich-textarea div[contenteditable='true'], textarea, [contenteditable='true']"
+  # KHÔNG dùng aria-label*='Tạo': chế độ video có chip mẫu "Tạo hiệu ứng pixel"...
+  generate_button: "button[aria-label*='Gửi'], button[aria-label*='Send'], button.send-button"
+  result_video: "video, a[href*='.mp4']"
+  download_button: "button[aria-label*='Tải video xuống'], button[aria-label*='Tải xuống'], button[aria-label*='Download'], a[aria-label*='Tải xuống'], a[download]"
+
+detect:
+  # DOM thật: khi đang tạo, nút gửi đổi thành button[aria-label="Ngừng tạo câu trả lời"] (icon ■)
+  generating: "button[aria-label*='Ngừng tạo'], button[aria-label*='Stop generating' i], [aria-label*='Đang tạo'], [aria-label*='Dừng phản hồi'], .generating, mat-progress-bar, .loading-indicator"
+  # Khung ảnh/video đã hiện nhưng media chưa tải xong -> vẫn đang tạo
+  media_placeholder: "generated-image, single-image, generated-video"
+  # Thanh like/dislike chỉ hiện khi câu trả lời xong -> mới được coi là "trả lời bằng chữ"
+  response_complete: "message-actions, thumb-up-button"
+  generating_texts:
+    - "đang tạo"
+    - "đang tạo video"
+    - "đang tạo hình ảnh"
+    - "có thể mất vài phút"
+    - "chờ trong giây lát"
+    - "generating"
+    - "generating video"
+    - "this may take a few minutes"
+    - "this may take"
+    - "creating video"
+    - "video is being generated"
+  refused_texts:
+    - "không thể tạo ảnh"
+    - "không thể tạo hình ảnh"
+    - "không thể hỗ trợ yêu cầu này"
+    - "vi phạm nguyên tắc an toàn"
+    - "chính sách an toàn"
+    - "I cannot generate images"
+    - "I can't generate images"
+    - "safety guidelines"
+    # Veo từ chối (thấy trên Gemini thật): "I can't generate that video. Try describing another idea... video policy guidelines"
+    - "can't generate that video"
+    - "cannot generate that video"
+    - "video policy"
+    - "try describing another idea"
+    - "không thể tạo video"
+    - "thử mô tả một ý tưởng khác"
+    - "chính sách về video"
+  quota_texts:
+    - "đã dùng hết lượt"
+    - "hết hạn mức"
+    - "đạt giới hạn yêu cầu"
+    - "rate limit exceeded"
+    - "quota exceeded"
+    - "usage limit reached"
+  login_url_prefix: "https://accounts.google.com"
