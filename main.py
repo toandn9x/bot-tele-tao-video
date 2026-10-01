@@ -14,6 +14,7 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
+from telegram.error import NetworkError
 from telegram.warnings import PTBUserWarning
 
 # Filter expected PTB reminder warnings
@@ -107,6 +108,11 @@ async def post_shutdown(app: Application) -> None:
 
 async def global_error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Catches and logs unhandled exceptions across handlers."""
+    # Polling hiccups (Telegram 502 Bad Gateway, timeouts, a brief DNS loss) arrive here without an update.
+    # PTB retries by itself and Telegram keeps the pending updates, so one warning line is enough.
+    if update is None and isinstance(context.error, NetworkError):
+        logger.warning(f"Telegram polling network error, retrying automatically: {context.error}")
+        return
     logger.error(f"Unhandled error in Telegram update: {context.error}", exc_info=context.error)
     if isinstance(update, Update) and update.effective_message:
         try:
@@ -308,7 +314,9 @@ def main():
     try:
         app = build_application()
         logger.info("Starting Telegram bot (long polling)...")
-        app.run_polling(drop_pending_updates=True)
+        # bootstrap_retries=-1: if the network is not up yet (e.g. right after the PC boots), keep retrying
+        # instead of exiting. An invalid token still aborts immediately.
+        app.run_polling(drop_pending_updates=True, bootstrap_retries=-1)
     except Exception as e:
         logger.critical(f"Fatal error starting bot: {e}", exc_info=True)
 
