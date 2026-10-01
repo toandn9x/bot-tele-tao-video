@@ -90,7 +90,6 @@ class BrowserService:
             "--no-first-run",
             "--no-default-browser-check",
             "--disable-popup-blocking",
-            "--start-maximized"
         ]
 
         logger.info(f"Launching Chrome via command: {' '.join(cmd)}")
@@ -165,7 +164,7 @@ class BrowserService:
         await self.ensure_chrome_process()
 
     async def get_page(self) -> Page:
-        """Gets the dedicated Gemini page or creates a new one."""
+        """Gets the dedicated Gemini page or creates a new one without stealing window focus."""
         await self.connect()
         if not self._context:
             raise RuntimeError("Browser context not available.")
@@ -175,50 +174,24 @@ class BrowserService:
         # 1. Search for existing Gemini Web tab
         for p in pages:
             if "gemini.google.com" in p.url:
-                try:
-                    await p.bring_to_front()
-                    page = p
-                    break
-                except Exception:
-                    pass
+                page = p
+                break
 
         # 2. Search for any valid tab
         if page is None:
             valid_pages = [p for p in pages if not p.url.startswith("devtools://")]
             if valid_pages:
                 page = valid_pages[0]
-                await page.bring_to_front()
 
         # 3. Create new page
         if page is None:
             page = await self._context.new_page()
 
-        await self.ensure_usable_window(page)
         return page
 
     async def ensure_usable_window(self, page: Page, min_width: int = 1200, min_height: int = 800) -> None:
-        """
-        Maximizes the bot's Chrome window when it is minimized or too small. In a tiny window Gemini's fixed
-        input box covers the results (hover/click get intercepted) and the '+' menu switches to another layout.
-        """
-        try:
-            cdp = await page.context.new_cdp_session(page)
-            try:
-                info = await cdp.send("Browser.getWindowForTarget")
-                window_id, bounds = info["windowId"], info["bounds"]
-                state = bounds.get("windowState", "normal")
-                if state in ("maximized", "fullscreen"):
-                    return
-                if state == "normal" and bounds.get("width", 0) >= min_width and bounds.get("height", 0) >= min_height:
-                    return
-                if state != "normal":
-                    await cdp.send("Browser.setWindowBounds", {"windowId": window_id, "bounds": {"windowState": "normal"}})
-                await cdp.send("Browser.setWindowBounds", {"windowId": window_id, "bounds": {"windowState": "maximized"}})
-                logger.info(f"Chrome window was {state} {bounds.get('width')}x{bounds.get('height')}; maximized it.")
-            finally:
-                await cdp.detach()
-        except Exception as e:
-            logger.debug(f"Could not check/resize Chrome window: {e}")
+        """No-op: Disabled to avoid stealing focus and forcing fullscreen/maximized window."""
+        pass
 
     async def click_download(self, page: Page, buttons, dest_file: Path, timeout_ms: int = 30000) -> bool:
         """
